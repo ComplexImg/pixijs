@@ -246,6 +246,14 @@ function getCanvasStyle(
                 .scale(texture.source.pixelWidth, texture.source.pixelHeight)
             : style.matrix;
 
+        if (textureMatrix) {
+            // The tinted pattern contains only the cropped texture frame, while the texture
+            // matrix maps into full-source pixel coordinates - compensate for the frame origin,
+            // otherwise atlas sub-textures are rendered shifted (and tiled around the shift)
+            const resolution = texture.source._resolution ?? texture.source.resolution ?? 1;
+            patternMatrix.translate(-texture.frame.x * resolution, -texture.frame.y * resolution);
+        }
+
         canvasUtils.applyPatternTransform(pattern, patternMatrix);
 
         return pattern;
